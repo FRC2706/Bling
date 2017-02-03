@@ -175,6 +175,12 @@ blingParms_t blingParmsTable [NUM_FUNCTIONS] = {
   
 };
 
+typedef enum {zone0, zone1, zone2, NUM_ZONES};
+
+int zone_starts[NUM_ZONES] = {1, 41, 81};
+int zone_ends[NUM_ZONES] = {38, 78, 118};
+ 
+
 // ----------------------------------------------------------------------------- //
 // setup
 // This runs once at reset time
@@ -888,45 +894,49 @@ void multiBounce(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_
     d1 = 80;
     d2 = 120;
  
-  uint16_t count = (d - a)/2  + 1;
-  
+  //uint16_t count = (d - a)/2  + 1;
+  uint16_t count = (zone_ends[0] - zone_starts[0])/2 + 1;
   
   for (uint16_t i = 0; i < count; i++) {
-    strip.setPixelColor(a, color);
-    strip.setPixelColor(d, GRN);
-
-    strip.setPixelColor(a1, RED);
-    strip.setPixelColor(d1, RED);
-    
-    strip.setPixelColor(a2, color);
-    strip.setPixelColor(d2, color);
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+       strip.setPixelColor(zone_starts[j] + i, color);
+       strip.setPixelColor(zone_ends[j] - i, color);
+    }
+  
     strip.show();
 
     if (delayWithBreak(wait)) {
       break;
     }
-    
-    strip.setPixelColor(a, 0);
-    strip.setPixelColor(d, 0);
-    
-    strip.setPixelColor(a1, 0);
-    strip.setPixelColor(d1, 0);
-    
-    strip.setPixelColor(a2, 0);
-    strip.setPixelColor(d2, 0);
-    strip.show();
 
-    a++;
-    d--;
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+       strip.setPixelColor(zone_starts[j] + i, 0);
+       strip.setPixelColor(zone_ends[j] - i, 0);
+    }
    
-    a1++;
-    d1--;
-    
-    a2++;
-    d2--;
+    strip.show();
   }
   
-  for (uint16_t i = 0; i < count; i++) {
+  for (uint16_t i = count; i > 0; --i) {
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+       strip.setPixelColor(zone_starts[j] + i, color);
+       strip.setPixelColor(zone_ends[j] - i, color);
+    }
+    
+    strip.show();
+
+    if (delayWithBreak(wait)) {
+      break;
+    }
+
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+       strip.setPixelColor(zone_starts[j] + i, 0);
+       strip.setPixelColor(zone_ends[j] - i, 0);
+    }
+
+    strip.show();
+  }
+ /* for (uint16_t i = 0; i < count; i++) {
     a--;
     d++;
     strip.setPixelColor(a, color);
@@ -956,7 +966,7 @@ void multiBounce(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_
     strip.setPixelColor(a2, 0);
     strip.setPixelColor(d2, 0);
     strip.show();
-  }
+  }*/
 
 }
 
