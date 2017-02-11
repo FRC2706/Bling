@@ -171,14 +171,14 @@ blingParms_t blingParmsTable [NUM_FUNCTIONS] = {
   {PUR,  25,  64,   0, MAX_Q,   5},  // 9 - bounceWipe
   {PUR,  25,  64,   0, MAX_Q,   5}, // 10 - MultiBounce
   {PUR,  25,  64,   0, MAX_Q,   5}, // 11 - MultiBounceWipe
-  {PUR,  25,  64,   0, MAX_Q,   5}  // 12 - MultiColorWipe
+  {PUR,  25,  64,   0, MAX_Q,   1}  // 12 - multiZoneBar
   
 };
 
 typedef enum {zone0, zone1, zone2, NUM_ZONES};
 
-int zone_starts[NUM_ZONES] = {1, 41, 81};
-int zone_ends[NUM_ZONES] = {38, 78, 118};
+int zone_starts[NUM_ZONES] = {0, 40, 80};
+int zone_ends[NUM_ZONES] = {39, 79, 119};
  
 
 // ----------------------------------------------------------------------------- //
@@ -386,7 +386,7 @@ void doBling() {
 
        break;
     case MULTI_COLOR_WIPE:
-      multiColorWipe(blingParmsTable[runningFunction].color,
+      multiZoneBar(blingParmsTable[runningFunction].color,
               blingParmsTable[runningFunction].pixelStart,
               blingParmsTable[runningFunction].pixelEnd,
               blingParmsTable[runningFunction].delay);
@@ -885,14 +885,6 @@ void multiBounce(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_
   uint16_t a, b, c, d = 0;
   uint16_t a1, b1, c1, d1 = 0;
   uint16_t a2, b2, c2, d2 = 0;
-  
-  a = 1;
-  a1 = 41;
-  a2 = 81;
-
-    d = 40;
-    d1 = 80;
-    d2 = 120;
  
   //uint16_t count = (d - a)/2  + 1;
   uint16_t count = (zone_ends[0] - zone_starts[0])/2 + 1;
@@ -936,38 +928,6 @@ void multiBounce(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_
 
     strip.show();
   }
- /* for (uint16_t i = 0; i < count; i++) {
-    a--;
-    d++;
-    strip.setPixelColor(a, color);
-    strip.setPixelColor(d, GRN);
-    
-    a1--;
-    d1++;
-    strip.setPixelColor(a1, RED);
-    strip.setPixelColor(d1, RED);
-    
-    a2--;
-    d2++;
-    strip.setPixelColor(a2, color);
-    strip.setPixelColor(d2, color);
-    strip.show();
-
-    if (delayWithBreak(wait)) {
-      break;
-    }
-    
-    strip.setPixelColor(a, 0);
-    strip.setPixelColor(d, 0);
-    
-    strip.setPixelColor(a1, 0);
-    strip.setPixelColor(d1, 0);
-    
-    strip.setPixelColor(a2, 0);
-    strip.setPixelColor(d2, 0);
-    strip.show();
-  }*/
-
 }
 
 // ----------------------------------------------------------------------------- //
@@ -975,157 +935,70 @@ void multiBounce(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_
 // ----------------------------------------------------------------------------- //
 
 void multiBounceWipe(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uint16_t wait) {
-  uint16_t a, b, c, d = 0;
-  uint16_t a1, b1, c1, d1 = 0;
-  uint16_t a2, b2, c2, d2 = 0;
-  
-  a = 1;
-  a1 = 41;
-  a2 = 81;
 
-    d = 40;
-    d1 = 80;
-    d2 = 120;
+  uint16_t count = (zone_ends[0] - zone_starts[0])/2 + 1;
+  
+  for (uint16_t i = 0; i < count; i++) {
+
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+         strip.setPixelColor(zone_starts[j] + i, color);
+         strip.setPixelColor(zone_ends[j] - i, color);
+    }
+
+    strip.show();
+
+    if (delayWithBreak(wait)) {
+      break;
+    }
+  }
+  
+  for (uint16_t i = count; i > 0; --i) {
+
+    for (uint16_t j = 0; j < NUM_ZONES; j++) {
+       strip.setPixelColor(zone_starts[j] + i, 0);
+       strip.setPixelColor(zone_ends[j] - i, 0);
+    }
+
+    strip.show();
+    
+
+    if (delayWithBreak(wait)) {
+      break;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------- //
+// multiZoneBar
+// Fill from the edges to the center of each zone and then clear out again in
+// the opposite direction (from center to edges)
+// ----------------------------------------------------------------------------- //
+
+void multiZoneBar(uint32_t c, uint16_t pixelStart, uint16_t pixelEnd, uint8_t wait){
+  // Clear
+  for(uint16_t i=pixelStart; i<pixelEnd; i++) {
+      strip.setPixelColor(i, 0);
+  } // end for i
+  strip.show();
+  
+  // We are interpreting the wait value as a percentage (0 - 100)
+  // and we will fill that percentage of the zone. The  following 
+  // computation assumes that all zones are the same size
+  uint16_t delta = (zone_ends[0] - zone_starts[0] + 1);
+  uint16_t numPixels = delta * wait / 100;
+
+  if ((numPixels * 100) != (delta * wait)) {
+    numPixels++;
+  }
+  
+  for (uint16_t j = 0; j < NUM_ZONES; j++) {
+    for(uint16_t i=zone_starts[j]; i<zone_starts[j] + numPixels; i++) {
+        strip.setPixelColor(i, c);
+    }
+  } 
+  strip.show();
  
-  uint16_t count = (d - a)/2  + 1;
-  
-  
-  for (uint16_t i = 0; i < count; i++) {
-    strip.setPixelColor(a, color);
-    strip.setPixelColor(d, color);
-
-    strip.setPixelColor(a1, RED);
-    strip.setPixelColor(d1, RED);
-    
-    strip.setPixelColor(a2, color);
-    strip.setPixelColor(d2, color);
-    strip.show();
-
-    if (delayWithBreak(wait)) {
-      break;
-    }
-    
-    strip.setPixelColor(a, 0);
-    strip.setPixelColor(d, 0);
-    
-    strip.setPixelColor(a1, 0);
-    strip.setPixelColor(d1, 0);
-    
-    strip.setPixelColor(a2, 0);
-    strip.setPixelColor(d2, 0);
-    strip.show();
-
-    a++;
-    d--;
-   
-    a1++;
-    d1--;
-    
-    a2++;
-    d2--;
-  }
-  
-  for (uint16_t i = 0; i < count; i++) {
-    a--;
-    d++;
-    strip.setPixelColor(a, color);
-    strip.setPixelColor(d, color);
-    
-    a1--;
-    d1++;
-    strip.setPixelColor(a1, RED);
-    strip.setPixelColor(d1, RED);
-    
-    a2--;
-    d2++;
-    strip.setPixelColor(a2, color);
-    strip.setPixelColor(d2, color);
-    strip.show();
-
-    if (delayWithBreak(wait)) {
-      break;
-    }
-    
-   /* strip.setPixelColor(a, 0);
-    strip.setPixelColor(d, 0);
-    
-    strip.setPixelColor(a1, 0);
-    strip.setPixelColor(d1, 0);
-    
-    strip.setPixelColor(a2, 0);
-    strip.setPixelColor(d2, 0);*/
-    strip.show();
-  }
-
 }
-
-// ----------------------------------------------------------------------------- //
-// multiColorWipe
-// ----------------------------------------------------------------------------- //
-
-void multiColorWipe(uint32_t c, uint8_t wait, uint16_t pixelStart, uint16_t pixelEnd){
-/*
-  for(uint16_t i=1; i<40; i++) {
-      strip.setPixelColor(i, PUR);
-      strip.show();
-      if (delayWithBreak (wait)) {
-        return;
-      //}
-  } // for
- // return;
-
-  for(uint16_t i=40; i<80; i++) {
-      strip.setPixelColor(i, RED);
-      strip.show();
-     if (delayWithBreak (wait)) {
-        return;
-     }
-  } // for
-  //return;
-
-  for(uint16_t i=80; i<120; i++) {
-      strip.setPixelColor(i, PUR);
-      strip.show();
-      if (delayWithBreak (wait)) {
-        return;
-      }
-  } // for
-  //return;
-
-  
-  
-  for(uint16_t i=40; i>0; i--) {
-      strip.setPixelColor(i,RED);
-      strip.show();
-      if (delayWithBreak (wait)) {
-        return;
-      }
-  } // for
- // return;
-
-  for(uint16_t i=80; i>40; i--) {
-      strip.setPixelColor(i, GRN);
-      strip.show();
-     if (delayWithBreak (wait)) {
-       return;
-      }
-  } // for
-  //return;
-
-  for(uint16_t i=120; i>80; i--) {
-      strip.setPixelColor(i, RED);
-      strip.show();
-      if (delayWithBreak (wait)) {
-        return;
-      }
-  } // for
-  //return;
-
-*/  
-}
-
-
-
 // ----------------------------------------------------------------------------- //
 // delayWithBreak
 // A delay function which checks the serial device every millisecond to
