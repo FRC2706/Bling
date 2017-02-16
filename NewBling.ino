@@ -975,12 +975,15 @@ void multiBounceWipe(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uin
 // ----------------------------------------------------------------------------- //
 
 void multiZoneBar(uint32_t c, uint16_t pixelStart, uint16_t pixelEnd, uint8_t wait){
+
   // Clear
   for(uint16_t i=pixelStart; i<pixelEnd; i++) {
       strip.setPixelColor(i, 0);
   } // end for i
   strip.show();
   
+  delayWithBreak(250);
+
   // We are interpreting the wait value as a percentage (0 - 100)
   // and we will fill that percentage of the zone. The  following 
   // computation assumes that all zones are the same size
@@ -997,6 +1000,7 @@ void multiZoneBar(uint32_t c, uint16_t pixelStart, uint16_t pixelEnd, uint8_t wa
     }
   } 
   strip.show();
+  delayWithBreak(250);
  
 }
 // ----------------------------------------------------------------------------- //
