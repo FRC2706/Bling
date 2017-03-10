@@ -76,8 +76,9 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 #endif
 
 #define STRIP_PIN    6 // The Arduino digital IO pin used to send data to the LED array
-#define STRIP_LEN  120 // The number of pixels in the LED strip
-#define MAX_Q      120 // the last LED to use. Shold not be greater than STRIP_LEN
+#define STRIP_LEN  150 // The number of pixels in the LED strip
+#define MAX_Q      150 // the last LED to use. Shold not be greater than STRIP_LEN
+#define DEF_Q      110 // need to count this on competition bot
 
 // NeoPixel object construction
 // Parameter 1 = number of pixels in strip
@@ -160,18 +161,18 @@ long ledInterval  =  500;                 // interval at which to blink (millise
 blingParms_t blingParmsTable [NUM_FUNCTIONS] = {
 //   C    D    B    P    Q    R
   {DNT,  UN,  UN,   0, MAX_Q,   1}, // 0 - clear
-  {PNK,  25,  64,   0, MAX_Q,   1}, // 1 - colorWipe
-  {GRN,  25,  64,   0, MAX_Q,   5}, // 2 - colorWipeWithBlank
-  {TUR,  25,  64,   0, MAX_Q,   5}, // 3 - theatreChase
-  { UN,  25,  64,   0, MAX_Q,   5}, // 4 - rainbow
-  {YEL,  25,  64,   0, MAX_Q,   5}, // 5 - theatreChaseRainbow
-  {PUR,  25,  64,   0, MAX_Q,   5}, // 6 - colorBar
-  {YEL, 250,  64,   0, MAX_Q,  50}, // 7 - colorBarFlash
-  {BLU,  50,  64,   0, MAX_Q,  10}, // 8 - bounce
-  {PUR,  25,  64,   0, MAX_Q,   5},  // 9 - bounceWipe
-  {PUR,  25,  64,   0, MAX_Q,   5}, // 10 - MultiBounce
-  {PUR,  25,  64,   0, MAX_Q,   5}, // 11 - MultiBounceWipe
-  {PUR,  25,  64,   0, MAX_Q,   1}  // 12 - multiZoneBar
+  {PNK,  25,  64,   0, DEF_Q,   1}, // 1 - colorWipe
+  {GRN,  25,  64,   0, DEF_Q,   5}, // 2 - colorWipeWithBlank
+  {TUR,  25,  64,   0, DEF_Q,   5}, // 3 - theatreChase
+  { UN,  25,  64,   0, DEF_Q,   5}, // 4 - rainbow
+  {YEL,  25,  64,   0, DEF_Q,   5}, // 5 - theatreChaseRainbow
+  {PUR,  25,  64,   0, DEF_Q,   5}, // 6 - colorBar
+  {YEL, 250,  64,   0, DEF_Q,  50}, // 7 - colorBarFlash
+  {BLU,  50,  64,   0, DEF_Q,  10}, // 8 - bounce
+  {PUR,  25,  64,   0, DEF_Q,   5},  // 9 - bounceWipe
+  {PUR,  25,  64,   0, DEF_Q,   5}, // 10 - MultiBounce
+  {PUR,  25,  64,   0, DEF_Q,   5}, // 11 - MultiBounceWipe
+  {PUR,  25,  64,   0, DEF_Q,   1}  // 12 - multiZoneBar
   
 };
 
@@ -975,15 +976,12 @@ void multiBounceWipe(uint32_t color, uint16_t pixelStart, uint16_t pixelEnd, uin
 // ----------------------------------------------------------------------------- //
 
 void multiZoneBar(uint32_t c, uint16_t pixelStart, uint16_t pixelEnd, uint8_t wait){
-
   // Clear
   for(uint16_t i=pixelStart; i<pixelEnd; i++) {
       strip.setPixelColor(i, 0);
   } // end for i
   strip.show();
   
-  delayWithBreak(250);
-
   // We are interpreting the wait value as a percentage (0 - 100)
   // and we will fill that percentage of the zone. The  following 
   // computation assumes that all zones are the same size
@@ -1000,7 +998,6 @@ void multiZoneBar(uint32_t c, uint16_t pixelStart, uint16_t pixelEnd, uint8_t wa
     }
   } 
   strip.show();
-  delayWithBreak(250);
  
 }
 // ----------------------------------------------------------------------------- //
