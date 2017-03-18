@@ -166,7 +166,7 @@ blingParms_t blingParmsTable [NUM_FUNCTIONS] = {
   {TUR,  25,  64,   0, DEF_Q,   5}, // 3 - theatreChase
   { UN,  25,  64,   0, DEF_Q,   5}, // 4 - rainbow
   {YEL,  25,  64,   0, DEF_Q,   5}, // 5 - theatreChaseRainbow
-  {PUR,  25,  64,   0, DEF_Q,   5}, // 6 - colorBar
+  {PUR,  25,  64,   0, DEF_Q,   1}, // 6 - colorBar
   {YEL, 250,  64,   0, DEF_Q,  50}, // 7 - colorBarFlash
   {BLU,  50,  64,   0, DEF_Q,  10}, // 8 - bounce
   {PUR,  25,  64,   0, DEF_Q,   5},  // 9 - bounceWipe
@@ -316,6 +316,8 @@ void doBling() {
   if (CLEAR != runningFunction) {
     strip.setBrightness(blingParmsTable[runningFunction].brightness);
   }
+
+  colorBar (0, 0, MAX_Q);
   
   switch (runningFunction)
   {
