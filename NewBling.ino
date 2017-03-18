@@ -317,6 +317,7 @@ void doBling() {
     strip.setBrightness(blingParmsTable[runningFunction].brightness);
   }
 
+  // Always start with a blank LED strip
   colorBar (0, 0, MAX_Q);
   
   switch (runningFunction)
