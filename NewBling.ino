@@ -301,7 +301,7 @@ void serialEvent() {
 
 void doBling() {
   
-  serialStatusShow(RESPONSE_CHAR);
+  //serialStatusShow(RESPONSE_CHAR);
   LCDStatusShow(RESPONSE_CHAR);
   // Set the staus LED on to indicate that we are running a bling function
   
@@ -406,9 +406,9 @@ void doBling() {
 
 void processCommand(char cmdChar, uint32_t cmdVal) {
   // Debug
-  // Serial.print(cmdChar);
-  // Serial.print(" ");
-  // Serial.println(cmdVal);
+   Serial.print(cmdChar);
+   Serial.print(" ");
+   Serial.println(cmdVal);
   
   switch (cmdChar) {
     case 'B':
@@ -463,7 +463,7 @@ void processCommand(char cmdChar, uint32_t cmdVal) {
       }
   } // end switch(cmdChar)
   
-    serialStatusShow('C');
+//    serialStatusShow('C');
     LCDStatusShow('C');
     doneSent = false;
 }
